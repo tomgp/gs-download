@@ -1,5 +1,5 @@
 {
-  "name": "@tomgp/gs-download",
+  "name": "@tomgp/gsdownload",
   "version": "1.0.2",
   "description": "Download a google sheet as a collection of CSV files. for use in a CI context",
   "main": "index.js",
