@@ -1,6 +1,6 @@
 {
   "name": "@tomgp/gs-download",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Download a google sheet as a collection of CSV files. for use in a CI context",
   "main": "index.js",
   "scripts": {
