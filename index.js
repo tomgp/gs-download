@@ -5,56 +5,62 @@ require('dotenv').config();
 const { program } = require('commander');
 const fs = require('fs');
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-program.parse();
 
+if (require.main === module) {
+  program.parse();
+  let [sheetID, outdir] = program.args; // e.g. '10x0DkhnDBOfAV8-cUbDeh1BBTQKuncwEozScRJZV4m4';
 
-let [sheetID, outdir] = program.args; // = '10x0DkhnDBOfAV8-cUbDeh1BBTQKuncwEozScRJZV4m4';
-
-let creds = {
-  "private_key": process.env.GOOGLE_PRIVATE_KEY,
-  "client_email": process.env.GOOGLE_CLIENT_EMAIL
-};
-
-if(sheetID){
-  if (!fs.existsSync(outdir)){
-    fs.mkdirSync(outdir);
-  }
-  (async function() {
-    const doc = new GoogleSpreadsheet(sheetID);
-    await doc.useServiceAccountAuth(creds);
-    await doc.loadInfo(); // loads document properties and worksheets
-    
-    Object.entries(doc.sheetsByTitle).forEach(async ([title, worksheet])=>{
-      console.log(`Downloading ${title}...`);
-      const CSV = await worksheet.downloadAsCSV();
-      const location = `${outdir}/${title}.csv`;
-      fs.writeFile(location, CSV, (err)=>{
-        if(err){
-          console.error(`Problem saving ${title}: ${err}`);
-        }else{
-          console.log(`Saved ${title} to ${location}`);
-        }
-      });
-    })
-
-    const meta = {
-      sheetID,
-      checked: new Date(),
-      commit: process.env.COMMIT_SHA,
-      sheets: Object.keys(doc.sheetsByTitle)
+  if(sheetID){
+    if (!fs.existsSync(outdir)){
+      fs.mkdirSync(outdir);
     }
-    fs.writeFile(`${outdir}/meta.json`,JSON.stringify(meta),(err)=>{
+    getSheet(sheetID, process.env.GOOGLE_CLIENT_EMAIL, process.env.GOOGLE_PRIVATE_KEY, outdir)
+    .catch(err=>{
+      console.error('OOOPS', err);
+    });  
+  }else{
+    console.log(`We're missing sheet ID? ${sheetID}`);
+  }
+}
+
+
+async function getSheet(id, email, key, output){
+  const creds = {
+    "private_key": key,
+    "client_email": email
+  };
+  const doc = new GoogleSpreadsheet(id);
+  await doc.useServiceAccountAuth(creds);
+  await doc.loadInfo();
+  
+  Object.entries(doc.sheetsByTitle).forEach(async ([title, worksheet])=>{
+    console.log(`Downloading ${title}...`);
+    const CSV = await worksheet.downloadAsCSV();
+    const location = `${output}/${title}.csv`;
+    fs.writeFile(location, CSV, (err)=>{
       if(err){
-        console.error(`Problem saving metadata: ${err}`);
+        console.error(`Problem saving ${title}: ${err}`);
       }else{
-        console.log(`Saved metadata`);
+        console.log(`Saved ${title} to ${location}`);
       }
     });
+  })
 
-  })()
-  .catch(err=>{
-    console.error('OOOPS', /*err*/);
-  });  
-}else{
-  console.log(`We're missing sheet ID? ${sheetID}`);
+  const meta = {
+    sheetID:id,
+    checked: new Date(),
+    commit: process.env.COMMIT_SHA,
+    sheets: Object.keys(doc.sheetsByTitle)
+  }
+  fs.writeFile(`${output}/meta.json`,JSON.stringify(meta),(err)=>{
+    if(err){
+      console.error(`Problem saving metadata: ${err}`);
+    }else{
+      console.log(`Saved metadata`);
+    }
+  });
 }
+
+module.exports = {
+  getSheet,
+};
