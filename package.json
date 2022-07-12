@@ -3,6 +3,7 @@
   "version": "1.0.3",
   "description": "Download a google sheet as a collection of CSV files. for use in a CI context",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "node test.js",
     "getsheet": "node index.js"
@@ -15,6 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "commander": "^9.3.0",
+    "d3": "^7.6.1",
+    "d3-dsv": "^3.0.1",
     "dotenv": "^16.0.1",
     "google-spreadsheet": "^3.3.0"
   },
