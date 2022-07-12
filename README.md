@@ -2,9 +2,11 @@
 
 Download Google sheets as CSVs using a service account.
 
+## Process overview
+
 1. Create a Google service account 
 2. Share your spreadsheet with that account
-3. Provide credential from that account to `gsdownload` and a sheet ID and it'll download each worksheet as a CSV file to a location you specify 
+3. Provide credentials from that account to `gsdownload` and a sheet ID and it'll download each worksheet as a CSV file to a location you specify. 
 
 >Be careful not to leak your private key. The best way to provide it is usually as an environment variable.
 
