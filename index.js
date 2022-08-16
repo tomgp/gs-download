@@ -32,11 +32,12 @@ async function getSheet(id, email, key, output){
   const doc = new GoogleSpreadsheet(id);
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
-  
+  const fileList = [];
   Object.entries(doc.sheetsByTitle).forEach(async ([title, worksheet])=>{
     console.log(`Downloading ${title}...`);
     const CSV = await worksheet.downloadAsCSV();
     const location = `${output}/${title}.csv`;
+    fileList.push(location);
     fs.writeFile(location, CSV, (err)=>{
       if(err){
         console.error(`Problem saving ${title}: ${err}`);
@@ -59,6 +60,7 @@ async function getSheet(id, email, key, output){
       console.log(`Saved metadata`);
     }
   });
+  return fileList;
 }
 
 module.exports = {
