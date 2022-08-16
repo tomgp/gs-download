@@ -12,7 +12,7 @@ This mainly developed for use in a CI context so...
 
 ## CI usage
 
-Using _gsdownload_ in a CI context, like Google actions for example you need to 
+To use _gsdownload_ in a CI context (like Github actions for example) you need to 
 
 1. set `GOOGLE_CLIENT_EMAIL` and `GOOGLE_PRIVATE_KEY` as environment variables / secrets for github actions you can do this in the repo Settings->Secrets->Actions i.e. `https://github.com/<username/orgname>/<reponame>/settings/secrets/actions`
 2. make sure your task runner can run install/ node scripts and in your CI workflow globally install _gsdownload_ `npm i -g @tomgp/gsdownload`
